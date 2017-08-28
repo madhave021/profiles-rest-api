@@ -4,28 +4,41 @@ from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.models import BaseUserManager
 
 class UserProfileManager(BaseUserManager):
-    def create_user(self,email,name,password=None):
-        if not email:
-             raise ValueError('user must Enter email')
-        email=self.normalize_email(email)
-        user=self.models(email=email,name=name)
+    """Helps Django work with our custom user model."""
 
-        user.set_password(pssword)
-        user.save(using=django._db)
+    def create_user(self, email, name, password=None):
+        """Creates a new user profile."""
+
+        if not email:
+            raise ValueError('Users must have an email address.')
+
+        email = self.normalize_email(email)
+        user = self.model(email=email, name=name,)
+
+        user.set_password(password)
+        user.save(using=self._db)
 
         return user
-    def create_superuser(self,name,email,password):
-        user=self.create_user(name,email,passsword)
 
-        user.is_superuser=True
-        user.is_staff= True
-        user.save(using=self_.db)
-class UserProfile(AbstractBaseUser,PermissionsMixin):
+    def create_superuser(self, email, name, password):
+        """Creates and saves a new superuser with given details."""
 
-    """Represent a "user profile" inside your system"""
+        user = self.create_user(email, name, password)
 
-    email = models.EmailField(max_length=255,unique=True)
-    name  = models.CharField(max_length= 255)
+        user.is_superuser = True
+        user.is_staff = True
+        user.save(using=self._db)
+
+        return user
+
+class UserProfile(AbstractBaseUser, PermissionsMixin):
+    """
+    Represents a "user profile" inside out system. Stores all user account
+    related data, such as 'email address' and 'name'.
+    """
+
+    email = models.EmailField(max_length=255, unique=True)
+    name = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 
